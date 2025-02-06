@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio 1D</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.31/esri/themes/light/main.css">
+    <script src="https://js.arcgis.com/4.31/"></script>
+    <style>
+
+        body{
+            height: 100vh;
+            width: 100vw;
+            margin: 0px;
+        }
+
+        #viewDiv{
+            height: 100%;
+            width: 100%;
+        }
+
+    </style>
+
+    <script defer>
+    
+        require(["esri/Map", "esri/views/SceneView"], (Map, SceneView) => {
+
+            const mapa = new Map({
+                basemap:'navigation-3d',
+                ground:'world-elevation'
+            })
+
+            const vistaEscena = new SceneView({
+                container:'viewDiv',
+                map:mapa
+            })
+
+        })
+
+    </script>
+
+</head>
+<body>
+    <div id="viewDiv"></div>
+</body>
+</html>

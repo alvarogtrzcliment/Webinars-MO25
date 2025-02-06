@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventos del Mapa</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.31/esri/themes/light/main.css">
+    <script src="https://js.arcgis.com/4.31/"></script>
+
+    <style>
+
+        body{
+            height: 100vh;
+            width: 100vw;
+            margin: 0px;
+        }
+
+        #viewDiv{
+            height: 100%;
+            width: 100%;
+        }
+
+    </style>
+
+    <script defer>
+
+        require(["esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer"], (Map, MapView, FeatureLayer) => {
+
+            const mapa = new Map({
+                basemap:'topo-vector'
+            })
+
+            const vistaMapa = new MapView({
+                container:'viewDiv',
+                map:mapa,
+                center:[-3.7,40.40],
+                zoom:10
+            })
+
+            const capaHospitales = new FeatureLayer({
+                url:'https://services1.arcgis.com/nCKYwcSONQTkPA4K/arcgis/rest/services/Hospitales/FeatureServer'
+            })
+
+            vistaMapa.on('click', (eventoClick) => {
+                mapa.add(capaHospitales)
+            })
+
+        })
+
+    </script>
+
+</head>
+<body>
+    <div id="viewDiv"></div>
+</body>
+</html>
