@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio 3C</title>
+
+    <!-- Cargar la SDK -->
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.31/esri/themes/light/main.css">
+    <script src="https://js.arcgis.com/4.31/"></script>
+
+    <!-- Script JS -->
+
+    <script defer>
+
+        require(["esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/rest/support/Query","esri/layers/GraphicsLayer"],(Map, MapView, FeatureLayer, Query, GraphicsLayer)=>{
+
+            const mapa = new Map({
+                basemap:'topo-vector'
+            })
+
+            const vistaMapa = new MapView({
+                container:'viewDiv',
+                zoom:5,
+                center:[-3.69,40.40],
+                map:mapa
+            })
+
+            const capaGrafica = new GraphicsLayer()
+
+            mapa.add(capaGrafica)
+
+            const capaPaises = new FeatureLayer({
+                url:'https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/World_Countries/FeatureServer'
+            })
+
+            const capaIncendios = new FeatureLayer({
+                portalItem:{
+                    id:'b8f4033069f141729ffb298b7418b653'
+                }
+            })
+
+            // Selección por atributos
+
+            const parametrosQueryPaises = new Query({
+                where:"ISO_CC = 'ESP'",
+                returnGeometry:true,
+                outFields:['*']
+            })
+
+            capaPaises.queryFeatures(parametrosQueryPaises).then((featureSet)=>{
+
+                console.log(featureSet)
+
+                // Array de Polígonos
+                
+                const poligonosEspana = featureSet.features
+
+                // Iterador de polígonos
+
+                poligonosEspana.map((poligonos)=>{
+
+                    // Consulta por geometría
+
+                    const parametrosQueryPoligonosIncendios = new Query({
+                        geometry:poligonos.geometry,
+                        returnGeometry:true,
+                        outFields:['*'],
+                    })
+
+                    capaIncendios.queryFeatures(parametrosQueryPoligonosIncendios).then((resultadosQuery)=>{
+                        const incendios = resultadosQuery.features
+
+                        const incendiosSimbologia = incendios.map((incendio)=>{
+                            incendio.symbol = {
+                                type:'simple-marker',
+                                color: [255,255,255,0.25],
+                                outline: {
+                                    cap: "round",
+                                    color: [0,122,194,1],
+                                    join: "round",
+                                    miterLimit: 1,
+                                    style: "solid",
+                                    width: 1
+                                }
+                            }
+                            return incendio
+                        })
+
+                        capaGrafica.addMany(incendiosSimbologia)
+
+                    })
+                    
+                })
+
+
+
+
+            })
+
+
+
+        })
+
+
+
+    </script>
+
+    <style>
+        body{
+            margin: 0;
+            width: 100vw;
+            height:100vh;
+        }
+
+        #viewDiv{
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+
+</head>
+<body>
+    <div id="viewDiv"></div>
+</body>
+</html>
